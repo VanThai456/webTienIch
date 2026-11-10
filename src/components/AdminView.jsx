@@ -10,13 +10,47 @@ import { realtimeService, SESSION_ID } from '../services/realtime';
 import { soundManager } from '../utils/sound';
 
 export default function AdminView({ onOpenCustomerPreview }) {
-  const [orders, setOrders] = useState([]);
-  const [requests, setRequests] = useState([]);
+  // Đọc danh sách đơn đã lưu trong bộ nhớ cache local để khi bấm F5 không bao giờ bị mất đơn
+  const [orders, setOrders] = useState(() => {
+    try {
+      const cached = localStorage.getItem('smartqr_orders_' + SESSION_ID);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [requests, setRequests] = useState(() => {
+    try {
+      const cached = localStorage.getItem('smartqr_requests_' + SESSION_ID);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'qr' | 'menu'
   const [orderFilter, setOrderFilter] = useState('all'); // 'all' | 'pending' | 'preparing' | 'served'
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [selectedTableQR, setSelectedTableQR] = useState(null);
   const [printOrder, setPrintOrder] = useState(null);
+
+  // Tự động lưu cache mỗi khi orders hoặc requests thay đổi
+  useEffect(() => {
+    try {
+      localStorage.setItem('smartqr_orders_' + SESSION_ID, JSON.stringify(orders));
+    } catch {
+      // bỏ qua lỗi cache
+    }
+  }, [orders]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('smartqr_requests_' + SESSION_ID, JSON.stringify(requests));
+    } catch {
+      // bỏ qua lỗi cache
+    }
+  }, [requests]);
 
   // Load initial data and subscribe to realtime events
   useEffect(() => {

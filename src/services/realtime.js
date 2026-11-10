@@ -16,21 +16,24 @@ if (isConfigured) {
   }
 }
 
-// 2. Định danh Session ID Tự Động (Mỗi khách truy cập web có 1 phòng riêng biệt 100%)
+// 2. Định danh Session ID (Đồng bộ chuẩn xác giữa các Tab và thiết bị quét QR)
 const urlParams = new URLSearchParams(window.location.search);
 const existingRoom = urlParams.get('room');
 
-const getGuestSession = () => {
-  if (existingRoom) return existingRoom;
-  let stored = sessionStorage.getItem('smartqr_guest_id');
+const getSessionId = () => {
+  if (existingRoom) {
+    localStorage.setItem('smartqr_session_id', existingRoom);
+    return existingRoom;
+  }
+  let stored = localStorage.getItem('smartqr_session_id');
   if (!stored) {
     stored = 'DEMO-' + Math.random().toString(36).substring(2, 7).toUpperCase();
-    sessionStorage.setItem('smartqr_guest_id', stored);
+    localStorage.setItem('smartqr_session_id', stored);
   }
   return stored;
 };
 
-export const SESSION_ID = getGuestSession();
+export const SESSION_ID = getSessionId();
 
 // 3. Kênh dự phòng BroadcastChannel (dành cho test cùng máy / 2 tab)
 const broadcastChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('smartqr_' + SESSION_ID) : null;
@@ -123,10 +126,17 @@ export const realtimeService = {
     // 1. Lưu Supabase nếu có
     if (supabase) {
       try {
-        await supabase.from('orders').insert([orderWithMeta]);
+        const { error } = await supabase.from('orders').insert([orderWithMeta]);
+        if (error) {
+          console.error('❌ Lỗi Supabase insert order:', error);
+        } else {
+          console.log('✅ Đã lưu đơn hàng vào Supabase:', orderWithMeta.id);
+        }
       } catch (err) {
         console.warn('Supabase insert order error, using realtime fallback:', err);
       }
+    } else {
+      console.warn('⚠️ Supabase chưa được kết nối! Vui lòng kiểm tra file .env');
     }
 
     // 2. Bắn qua MQTT
@@ -179,7 +189,12 @@ export const realtimeService = {
 
     if (supabase) {
       try {
-        await supabase.from('service_requests').insert([requestWithMeta]);
+        const { error } = await supabase.from('service_requests').insert([requestWithMeta]);
+        if (error) {
+          console.error('❌ Lỗi Supabase insert service_request:', error);
+        } else {
+          console.log('✅ Đã lưu yêu cầu vào Supabase:', requestWithMeta.id);
+        }
       } catch (err) {
         console.warn('Supabase insert request error:', err);
       }
@@ -226,31 +241,53 @@ export const realtimeService = {
     return () => statusListeners.delete(callback);
   },
 
-  // Lấy danh sách ban đầu từ Supabase (Chỉ lấy đơn trong 1 giờ qua của chính mã phiên này)
+  // Lấy danh sách ban đầu từ Supabase (Lấy đơn của phiên hiện tại trong 24 giờ qua)
   async fetchInitialData() {
     if (!supabase) return { orders: [], requests: [] };
     try {
-      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-      const { data: orders } = await supabase
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const { data: orders, error: oErr } = await supabase
         .from('orders')
         .select('*')
         .eq('session_id', SESSION_ID)
-        .gte('created_at', oneHourAgo)
+        .gte('created_at', oneDayAgo)
         .order('created_at', { ascending: false });
 
-      const { data: requests } = await supabase
+      if (oErr) console.error('❌ Lỗi tải orders từ Supabase:', oErr);
+
+      const { data: requests, error: rErr } = await supabase
         .from('service_requests')
         .select('*')
         .eq('session_id', SESSION_ID)
-        .gte('created_at', oneHourAgo)
+        .gte('created_at', oneDayAgo)
         .order('created_at', { ascending: false });
+
+      if (rErr) console.error('❌ Lỗi tải requests từ Supabase:', rErr);
 
       // Tự động dọn dẹp các đơn test cũ hơn 24 giờ trên Supabase ở chế độ nền
       this.cleanupOldDatabaseRecords();
 
       return { orders: orders || [], requests: requests || [] };
-    } catch {
+    } catch (e) {
+      console.error('❌ Lỗi fetchInitialData:', e);
       return { orders: [], requests: [] };
+    }
+  },
+
+  // Tải danh sách đơn đã gọi của một bàn cụ thể
+  async fetchTableOrders(tableNumber) {
+    if (!supabase) return [];
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('session_id', SESSION_ID)
+        .eq('table_number', Number(tableNumber))
+        .order('created_at', { ascending: false });
+      if (error) console.error('❌ Lỗi tải đơn của bàn:', error);
+      return data || [];
+    } catch {
+      return [];
     }
   },
 

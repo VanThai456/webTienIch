@@ -33,9 +33,34 @@ export default function CustomerView({ tableId = 1, onBackToAdmin }) {
   const [paymentMethod, setPaymentMethod] = useState('Chuyển khoản QR');
   const [feedbackMessage, setFeedbackMessage] = useState(null);
 
-  // State đơn hàng đã đặt của bàn này
-  const [myOrders, setMyOrders] = useState([]);
+  // State đơn hàng đã đặt của bàn này (Khởi tạo từ bộ nhớ để F5 không bao giờ mất)
+  const [myOrders, setMyOrders] = useState(() => {
+    try {
+      const cached = localStorage.getItem(`smartqr_myorders_${SESSION_ID}_${table.id}`);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
   const [activeTab, setActiveTab] = useState('menu'); // 'menu' | 'history'
+
+  // Tải lại các đơn của bàn từ Supabase khi mở
+  useEffect(() => {
+    realtimeService.fetchTableOrders(table.id).then(tableOrders => {
+      if (tableOrders && tableOrders.length > 0) {
+        setMyOrders(tableOrders);
+      }
+    });
+  }, [table.id]);
+
+  // Tự động lưu cache mỗi khi myOrders thay đổi
+  useEffect(() => {
+    try {
+      localStorage.setItem(`smartqr_myorders_${SESSION_ID}_${table.id}`, JSON.stringify(myOrders));
+    } catch {
+      // bỏ qua lỗi cache
+    }
+  }, [myOrders, table.id]);
 
   // Lắng nghe cập nhật trạng thái đơn hàng của mình từ Admin
   useEffect(() => {
