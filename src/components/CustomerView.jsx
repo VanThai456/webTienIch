@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { 
-  Coffee, ShoppingBag, Plus, Minus, Trash2, Bell, Receipt, 
+import {
+  Coffee, ShoppingBag, Plus, Minus, Trash2, Bell, Receipt,
   Search, CheckCircle, ArrowRight, Sparkles, AlertCircle,
   Clock, X, Send, User, ChevronUp
 } from 'lucide-react';
@@ -30,7 +30,7 @@ export default function CustomerView({ tableId = 1 }) {
   const [showRequestBillModal, setShowRequestBillModal] = useState(false);
   const [staffReason, setStaffReason] = useState('Xin thêm đá');
   const [customReason, setCustomReason] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('Chuyển khoản QR');
+  const [paymentMethod, setPaymentMethod] = useState('Chuyển khoản');
   const [feedbackMessage, setFeedbackMessage] = useState(null);
 
   // State đơn hàng đã đặt của bàn này (Khởi tạo từ bộ nhớ để F5 không bao giờ mất)
@@ -154,7 +154,7 @@ export default function CustomerView({ tableId = 1 }) {
       origin: { y: 0.6 }
     });
 
-    setFeedbackMessage('🎉 Đã gửi đơn thành công! Bếp đang chuẩn bị món cho bạn nhé.');
+    setFeedbackMessage('Đã gửi đơn thành công! Bếp đang chuẩn bị món cho bạn nhé.');
     setTimeout(() => setFeedbackMessage(null), 4000);
   };
 
@@ -170,7 +170,7 @@ export default function CustomerView({ tableId = 1 }) {
     });
 
     setShowCallStaffModal(false);
-    setFeedbackMessage('🛎️ Đã thông báo cho nhân viên! Nhân viên sẽ tới bàn bạn ngay.');
+    setFeedbackMessage('Đã thông báo cho nhân viên! Nhân viên sẽ tới bàn bạn ngay.');
     setTimeout(() => setFeedbackMessage(null), 4000);
   };
 
@@ -185,15 +185,15 @@ export default function CustomerView({ tableId = 1 }) {
     });
 
     setShowRequestBillModal(false);
-    setFeedbackMessage('💵 Đã gửi yêu cầu thanh toán! Nhân viên đang chuẩn bị hóa đơn.');
+    setFeedbackMessage('Đã gửi yêu cầu thanh toán! Nhân viên đang chuẩn bị hóa đơn.');
     setTimeout(() => setFeedbackMessage(null), 4000);
   };
 
   // Lọc món theo search & danh mục
   const filteredItems = MENU_ITEMS.filter(item => {
     const matchCat = selectedCategory === 'all' || item.category === selectedCategory;
-    const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                        item.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCat && matchSearch;
   });
 
@@ -209,9 +209,9 @@ export default function CustomerView({ tableId = 1 }) {
             </div>
             <div className="customer-greeting">
               Chào, <strong>{customerName || 'Quý khách'}</strong>
-              <button 
-                onClick={() => setShowNameModal(true)} 
-                className="btn-edit-name" 
+              <button
+                onClick={() => setShowNameModal(true)}
+                className="btn-edit-name"
                 title="Đổi tên"
               >
                 (Đổi)
@@ -221,7 +221,7 @@ export default function CustomerView({ tableId = 1 }) {
 
           {/* Tab Menu vs Lịch sử đơn */}
           <div className="customer-top-actions">
-            <button 
+            <button
               onClick={() => setActiveTab(activeTab === 'menu' ? 'history' : 'menu')}
               className={`customer-tab-switch ${activeTab === 'history' ? 'active-history' : ''}`}
             >
@@ -247,8 +247,8 @@ export default function CustomerView({ tableId = 1 }) {
               <div className="customer-search-wrap">
                 <div className="customer-search-box">
                   <Search size={18} className="text-slate-400" />
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder="Tìm món nước yêu thích..."
@@ -291,7 +291,7 @@ export default function CustomerView({ tableId = 1 }) {
                       <div className="customer-item-info">
                         <h4 className="customer-item-name">{item.name}</h4>
                         <p className="customer-item-desc">{item.description}</p>
-                        
+
                         <div className="customer-item-bottom">
                           <span className="customer-item-price">{formatMoney(item.price)}</span>
 
@@ -335,8 +335,8 @@ export default function CustomerView({ tableId = 1 }) {
                   {myOrders.map(order => {
                     const statusMap = {
                       pending: { label: 'Bếp đã nhận đơn', color: 'text-amber-600 bg-amber-50' },
-                      preparing: { label: 'Đang pha chế ☕', color: 'text-indigo-600 bg-indigo-50' },
-                      served: { label: 'Đã giao món tới bàn 🎉', color: 'text-emerald-600 bg-emerald-50' },
+                      preparing: { label: 'Đang pha chế ', color: 'text-indigo-600 bg-indigo-50' },
+                      served: { label: 'Đã giao món tới bàn ', color: 'text-emerald-600 bg-emerald-50' },
                       completed: { label: 'Đã thanh toán', color: 'text-slate-600 bg-slate-100' },
                     };
                     const st = statusMap[order.status] || statusMap.pending;
@@ -380,8 +380,8 @@ export default function CustomerView({ tableId = 1 }) {
         <div className="customer-bottom-bar">
           <div className="customer-actions-grid">
             {/* Nút Gọi nhân viên */}
-            <button 
-              onClick={() => setShowCallStaffModal(true)} 
+            <button
+              onClick={() => setShowCallStaffModal(true)}
               className="btn-bottom-action btn-call-staff"
             >
               <Bell size={18} />
@@ -389,8 +389,8 @@ export default function CustomerView({ tableId = 1 }) {
             </button>
 
             {/* Nút Gọi tính tiền */}
-            <button 
-              onClick={() => setShowRequestBillModal(true)} 
+            <button
+              onClick={() => setShowRequestBillModal(true)}
               className="btn-bottom-action btn-request-bill"
             >
               <Receipt size={18} />
@@ -398,8 +398,8 @@ export default function CustomerView({ tableId = 1 }) {
             </button>
 
             {/* Nút Giỏ hàng / Đặt món */}
-            <button 
-              onClick={() => setShowCartDrawer(true)} 
+            <button
+              onClick={() => setShowCartDrawer(true)}
               className={`btn-bottom-action btn-cart ${cart.length > 0 ? 'btn-cart-has-items' : ''}`}
             >
               <div className="cart-btn-inner">
@@ -427,8 +427,8 @@ export default function CustomerView({ tableId = 1 }) {
               </p>
 
               <form onSubmit={handleSaveName} className="mt-4">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={nameInput}
                   onChange={e => setNameInput(e.target.value)}
                   placeholder="Ví dụ: Anh Nam, Chị Linh..."
@@ -450,21 +450,25 @@ export default function CustomerView({ tableId = 1 }) {
         {showCallStaffModal && (
           <div className="customer-modal-backdrop" onClick={() => setShowCallStaffModal(false)}>
             <div className="customer-modal-box" onClick={e => e.stopPropagation()}>
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
-                  <Bell className="text-amber-500" size={20} />
+              <div className="customer-modal-header">
+                <h3 className="customer-modal-title">
+                  <Bell className="customer-modal-icon-amber" size={19} />
                   <span>Gọi nhân viên phục vụ</span>
                 </h3>
-                <button onClick={() => setShowCallStaffModal(false)} className="text-slate-400">
+                <button
+                  onClick={() => setShowCallStaffModal(false)}
+                  className="customer-modal-close"
+                  title="Đóng"
+                >
                   <X size={18} />
                 </button>
               </div>
 
-              <p className="text-xs text-slate-500 mt-2">
+              <p className="customer-modal-desc">
                 Bàn <strong>{table.name}</strong> cần nhân viên hỗ trợ vấn đề gì:
               </p>
 
-              <div className="quick-reasons-grid mt-3">
+              <div className="quick-reasons-grid">
                 {['Xin thêm đá', 'Lấy thêm khăn ướt', 'Chén / Dĩa / Muỗng', 'Tư vấn món', 'Khác'].map(r => (
                   <button
                     key={r}
@@ -478,18 +482,18 @@ export default function CustomerView({ tableId = 1 }) {
               </div>
 
               {staffReason === 'Khác' && (
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={customReason}
                   onChange={e => setCustomReason(e.target.value)}
                   placeholder="Nhập nội dung cần hỗ trợ..."
-                  className="customer-input-field mt-3 text-sm"
+                  className="customer-input-field customer-modal-input"
                 />
               )}
 
-              <button 
-                onClick={handleSendCallStaff} 
-                className="btn-primary w-full mt-4 flex items-center justify-center gap-2"
+              <button
+                onClick={handleSendCallStaff}
+                className="btn-primary customer-modal-submit"
               >
                 <Send size={16} />
                 <span>Gửi yêu cầu tới nhân viên</span>
@@ -502,55 +506,40 @@ export default function CustomerView({ tableId = 1 }) {
         {showRequestBillModal && (
           <div className="customer-modal-backdrop" onClick={() => setShowRequestBillModal(false)}>
             <div className="customer-modal-box" onClick={e => e.stopPropagation()}>
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
-                  <Receipt className="text-emerald-500" size={20} />
+              <div className="customer-modal-header">
+                <h3 className="customer-modal-title">
+                  <Receipt className="customer-modal-icon-emerald" size={19} />
                   <span>Yêu cầu thanh toán</span>
                 </h3>
-                <button onClick={() => setShowRequestBillModal(false)} className="text-slate-400">
+                <button
+                  onClick={() => setShowRequestBillModal(false)}
+                  className="customer-modal-close"
+                  title="Đóng"
+                >
                   <X size={18} />
                 </button>
               </div>
 
-              <p className="text-xs text-slate-500 mt-2">
+              <p className="customer-modal-desc">
                 Bàn <strong>{table.name}</strong> muốn thanh toán bằng hình thức nào:
               </p>
 
-              <div className="payment-options-grid mt-3">
-                {[
-                  { id: 'Chuyển khoản QR', label: 'Quét mã QR / Chuyển khoản', icon: '📱' },
-                  { id: 'Tiền mặt', label: 'Tiền mặt', icon: '💵' },
-                ].map(opt => (
+              <div className="quick-reasons-grid">
+                {['Chuyển khoản', 'Tiền mặt'].map(opt => (
                   <button
-                    key={opt.id}
+                    key={opt}
                     type="button"
-                    onClick={() => setPaymentMethod(opt.id)}
-                    className={`payment-option-card ${paymentMethod === opt.id ? 'payment-option-active' : ''}`}
+                    onClick={() => setPaymentMethod(opt)}
+                    className={`reason-chip ${paymentMethod === opt ? 'reason-chip-active' : ''}`}
                   >
-                    <span className="text-2xl">{opt.icon}</span>
-                    <span className="text-xs font-semibold mt-1">{opt.label}</span>
+                    {opt}
                   </button>
                 ))}
               </div>
 
-              {/* KHU VỰC HIỂN THỊ MÃ VIETQR KÈM SỐ TIỀN THỰC TẾ */}
-              {paymentMethod === 'Chuyển khoản QR' && (
-                <div className="vietqr-box-wrap mt-3 p-3 bg-slate-50 rounded-xl border border-slate-200 text-center">
-                  <span className="text-[11px] text-slate-500 block mb-1">Quét mã VietQR chuyển khoản nhanh:</span>
-                  <img 
-                    src={`https://img.vietqr.io/image/MB-0988888888-compact2.png?amount=${myOrders.reduce((s, o) => s + Number(o.total_amount || 0), 0) || 50000}&addInfo=Ban%200${table.id}%20Thanh%20Toan`} 
-                    alt="Mã VietQR Thanh Toán"
-                    className="mx-auto w-44 rounded-lg border border-slate-200 shadow-sm"
-                  />
-                  <span className="text-xs font-bold text-emerald-600 block mt-2">
-                    Tổng tiền: {formatMoney(myOrders.reduce((s, o) => s + Number(o.total_amount || 0), 0) || 50000)}
-                  </span>
-                </div>
-              )}
-
-              <button 
-                onClick={handleSendRequestBill} 
-                className="btn-primary w-full mt-4 flex items-center justify-center gap-2"
+              <button
+                onClick={handleSendRequestBill}
+                className="btn-primary customer-modal-submit"
               >
                 <Send size={16} />
                 <span>Gửi yêu cầu thanh toán</span>
@@ -605,8 +594,8 @@ export default function CustomerView({ tableId = 1 }) {
 
                   <div className="cart-note-wrap">
                     <label className="text-xs font-semibold text-slate-600 block mb-1">Ghi chú cho bếp (tùy chọn):</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={orderNote}
                       onChange={e => setOrderNote(e.target.value)}
                       placeholder="Ví dụ: Ít ngọt, nhiều đá, tách đá riêng..."
@@ -625,8 +614,8 @@ export default function CustomerView({ tableId = 1 }) {
                     </div>
                   </div>
 
-                  <button 
-                    onClick={handleConfirmOrder} 
+                  <button
+                    onClick={handleConfirmOrder}
                     className="btn-confirm-order"
                   >
                     <span>Xác nhận Đặt Món Ngay</span>
