@@ -4,7 +4,7 @@ import {
   Bell, Volume2, VolumeX, Coffee, Clock, CheckCircle2,
   AlertTriangle, PhoneCall, Receipt, Smartphone, ExternalLink,
   ChevronRight, UtensilsCrossed, Layers, Printer, X,
-  MessageCircle, QrCode, Mail, Sparkles
+  MessageCircle, QrCode, Mail
 } from 'lucide-react';
 import {
   TABLES,
@@ -187,9 +187,6 @@ export default function AdminView({ onOpenCustomerPreview }) {
           <div>
             <div className="brand-title-wrap">
               <h1 className="brand-title">SmartQR Order</h1>
-              <span className="brand-badge-live">
-                <span className="pulse-dot"></span> Realtime Live
-              </span>
             </div>
             <p className="brand-sub">Hệ Thống Đặt Món & Phục Vụ Thông Minh Tại Bàn</p>
           </div>
@@ -229,10 +226,6 @@ export default function AdminView({ onOpenCustomerPreview }) {
       {/* SHOWCASE HERO BANNER: GIỚI THIỆU GIẢI PHÁP & HƯỚNG DẪN 3 BƯỚC */}
       <section className="showcase-hero-banner">
         <div className="showcase-hero-main">
-          <span className="showcase-eyebrow">
-            <Sparkles size={13} />
-            <span>Demo Trực Tiếp • Không Cần Cài App</span>
-          </span>
           <h2 className="showcase-hero-title">{SERVICE_INFO.tagline}</h2>
           <p className="showcase-hero-desc">{SERVICE_INFO.description}</p>
           <div className="showcase-hero-actions">
@@ -890,7 +883,10 @@ export default function AdminView({ onOpenCustomerPreview }) {
                 </div>
               )}
 
-              <div className="consult-channel-card">
+              <a
+                href={`mailto:${SERVICE_INFO.contact.emailDisplay}`}
+                className="consult-channel-card consult-channel-link"
+              >
                 <div className="consult-channel-icon consult-icon-emerald">
                   <Mail size={18} />
                 </div>
@@ -898,7 +894,7 @@ export default function AdminView({ onOpenCustomerPreview }) {
                   <div className="consult-channel-label">Email hỗ trợ</div>
                   <div className="consult-channel-val">{SERVICE_INFO.contact.emailDisplay}</div>
                 </div>
-              </div>
+              </a>
             </div>
 
             <button

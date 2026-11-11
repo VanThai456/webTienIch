@@ -130,11 +130,11 @@ export const SERVICE_INFO = {
   ],
   contact: {
     ownerTitle: 'Tư vấn triển khai hệ thống cho quán của bạn',
-    hotlineDisplay: '09xx.xxx.xxx (Cập nhật SĐT của bạn trong menu.js)',
-    hotlineTel: '',
-    zaloLabel: 'Nhắn Zalo tư vấn (Cập nhật link Zalo trong menu.js)',
-    zaloUrl: '',
-    emailDisplay: 'contact@smartqr-demo.vn',
+    hotlineDisplay: '0837017516',
+    hotlineTel: '0837017516',
+    zaloLabel: 'Nhắn Zalo: 0837017516',
+    zaloUrl: 'https://zalo.me/0837017516',
+    emailDisplay: 'tiemweb@gmail.com',
   },
 };
 
