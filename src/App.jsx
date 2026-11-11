@@ -24,24 +24,17 @@ function App() {
 
   // Nếu người dùng quét QR từ điện thoại hoặc mở trực tiếp đường dẫn ?table=X
   if (isDirectCustomer) {
-    return (
-      <CustomerView 
-        tableId={directTableId} 
-        onBackToAdmin={() => {
-          window.location.href = window.location.pathname;
-        }} 
-      />
-    );
+    return <CustomerView tableId={directTableId} />;
   }
 
   // Mặc định: Màn hình Quản lý & Thu ngân POS Showcase
   return (
-    <div className="relative min-h-screen bg-slate-50 text-slate-800 font-sans">
-      <AdminView 
-        onOpenCustomerPreview={(tableId) => setPreviewPhoneTable(tableId)} 
+    <div className="app-root-shell">
+      <AdminView
+        onOpenCustomerPreview={(tableId) => setPreviewPhoneTable(tableId)}
       />
 
-      {/* POPUP GIẢ LẬP ĐIỆN THOẠI TRỰC TIẾP TRÊN MÁY TÍNH */}
+      {/* POPUP GIẢ LẬP ĐIỆN THOẠI (TRÊN MÁY TÍNH & MOBILE KHI CHỌN THỬ VAI KHÁCH) */}
       {previewPhoneTable && (
         <div className="phone-simulator-backdrop" onClick={() => setPreviewPhoneTable(null)}>
           <div className="phone-simulator-frame" onClick={e => e.stopPropagation()}>
@@ -52,36 +45,34 @@ function App() {
             </div>
 
             <div className="phone-header-controls">
-              <span className="text-xs font-bold text-slate-700 flex items-center gap-1">
-                <Smartphone size={14} className="text-amber-500" />
-                Màn hình Bàn 0{previewPhoneTable}
+              <span className="phone-header-label">
+                <Smartphone size={14} className="phone-header-icon" />
+                Giả lập Khách — Bàn 0{previewPhoneTable}
               </span>
-              <div className="flex items-center gap-1">
-                <a 
+              <div className="phone-header-btns">
+                <a
                   href={`${window.location.origin}${window.location.pathname}?table=${previewPhoneTable}&room=${SESSION_ID}`}
-                  target="_blank" 
+                  target="_blank"
                   rel="noreferrer"
-                  className="btn-icon-sm text-slate-500 hover:text-slate-800"
-                  title="Mở sang tab mới"
+                  className="btn-icon-sm phone-newtab-link"
+                  title="Mở giao diện khách (không có nút quay lại)"
                 >
                   <ExternalLink size={14} />
                 </a>
-                <button 
+                <button
                   onClick={() => setPreviewPhoneTable(null)}
-                  className="btn-icon-sm text-slate-500 hover:text-rose-600"
-                  title="Đóng giả lập"
+                  className="phone-close-pill"
+                  title="Đóng giả lập và xem kết quả tại Quầy"
                 >
-                  <X size={16} />
+                  <span>Đóng</span>
+                  <X size={15} />
                 </button>
               </div>
             </div>
 
             {/* Màn hình CustomerView nhúng bên trong khung điện thoại */}
             <div className="phone-screen-content">
-              <CustomerView 
-                tableId={previewPhoneTable} 
-                onBackToAdmin={() => setPreviewPhoneTable(null)} 
-              />
+              <CustomerView tableId={previewPhoneTable} />
             </div>
 
             {/* Thanh Home bar dưới đáy điện thoại */}

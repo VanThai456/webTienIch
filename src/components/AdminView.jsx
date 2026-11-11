@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import {
-  Bell, Volume2, VolumeX, Sparkles, Coffee, Clock, CheckCircle2,
+  Bell, Volume2, VolumeX, Coffee, Clock, CheckCircle2,
   AlertTriangle, PhoneCall, Receipt, Smartphone, ExternalLink,
-  ChevronRight, UtensilsCrossed, Layers, Printer, X
+  ChevronRight, UtensilsCrossed, Layers, Printer, X,
+  MessageCircle, QrCode, Mail, Sparkles
 } from 'lucide-react';
-import { TABLES, MENU_ITEMS, formatMoney } from '../data/menu';
+import {
+  TABLES,
+  MENU_ITEMS,
+  SERVICE_INFO,
+  createSampleOrder,
+  formatMoney,
+} from '../data/menu';
 import { realtimeService, SESSION_ID } from '../services/realtime';
 import { soundManager } from '../utils/sound';
 
 export default function AdminView({ onOpenCustomerPreview }) {
-  // Đọc danh sách đơn đã lưu trong bộ nhớ cache local để khi bấm F5 không bao giờ bị mất đơn
+  // Đọc danh sách đơn thật đã lưu trong bộ nhớ cache local để khi bấm F5 không bị mất đơn
   const [orders, setOrders] = useState(() => {
     try {
       const cached = localStorage.getItem('smartqr_orders_' + SESSION_ID);
@@ -29,11 +36,21 @@ export default function AdminView({ onOpenCustomerPreview }) {
     }
   });
 
-  const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'qr' | 'menu'
+  const [sampleOrder, setSampleOrder] = useState(() => createSampleOrder());
+  const [sampleDismissed, setSampleDismissed] = useState(() => {
+    try {
+      return localStorage.getItem('smartqr_sample_dismissed_' + SESSION_ID) === '1';
+    } catch {
+      return false;
+    }
+  });
+
+  const [activeTab, setActiveTab] = useState('workspace'); // 'workspace' | 'menu'
   const [orderFilter, setOrderFilter] = useState('all'); // 'all' | 'pending' | 'preparing' | 'served'
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [selectedTableQR, setSelectedTableQR] = useState(null);
   const [printOrder, setPrintOrder] = useState(null);
+  const [showConsultModal, setShowConsultModal] = useState(false);
 
   // Tự động lưu cache mỗi khi orders hoặc requests thay đổi
   useEffect(() => {
@@ -101,8 +118,34 @@ export default function AdminView({ onOpenCustomerPreview }) {
 
   const handleUpdateStatus = (orderId, newStatus) => {
     soundManager.playClick();
+    // Đơn mẫu chỉ cập nhật cục bộ trên giao diện, không gửi lên Supabase
+    if (orderId === sampleOrder.id) {
+      setSampleOrder(prev => ({ ...prev, status: newStatus }));
+      return;
+    }
     realtimeService.updateOrderStatus(orderId, newStatus);
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+  };
+
+  const handleDismissSample = () => {
+    soundManager.playClick();
+    setSampleDismissed(true);
+    try {
+      localStorage.setItem('smartqr_sample_dismissed_' + SESSION_ID, '1');
+    } catch {
+      // bỏ qua lỗi cache
+    }
+  };
+
+  const handleRestoreSample = () => {
+    soundManager.playClick();
+    setSampleOrder(createSampleOrder());
+    setSampleDismissed(false);
+    try {
+      localStorage.removeItem('smartqr_sample_dismissed_' + SESSION_ID);
+    } catch {
+      // bỏ qua lỗi cache
+    }
   };
 
   const handleResolveRequest = (reqId) => {
@@ -117,14 +160,18 @@ export default function AdminView({ onOpenCustomerPreview }) {
     return `${origin}${pathname}?table=${tableId}&room=${SESSION_ID}`;
   };
 
+  // Khi chưa có đơn thật nào và chưa ẩn đơn mẫu, hiển thị 1 đơn mẫu để người xem hình dung ngay
+  const showingSampleOnly = orders.length === 0 && !sampleDismissed;
+  const displayedOrders = showingSampleOnly ? [sampleOrder] : orders;
+
   // Thống kê nhanh
-  const pendingOrdersCount = orders.filter(o => o.status === 'pending').length;
+  const pendingOrdersCount = displayedOrders.filter(o => o.status === 'pending').length;
   const activeRequestsCount = requests.filter(r => r.status !== 'resolved').length;
   const totalRevenue = orders
     .filter(o => o.status !== 'cancelled')
     .reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
 
-  const filteredOrders = orders.filter(o => {
+  const filteredOrders = displayedOrders.filter(o => {
     if (orderFilter === 'all') return true;
     return o.status === orderFilter;
   });
@@ -156,7 +203,16 @@ export default function AdminView({ onOpenCustomerPreview }) {
             title={soundEnabled ? 'Âm thanh thông báo: BẬT' : 'Âm thanh thông báo: TẮT'}
           >
             {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
-            <span className="text-xs font-medium">{soundEnabled ? 'Chuông BẬT' : 'Chuông TẮT'}</span>
+            <span className="btn-label-sm">{soundEnabled ? 'Chuông BẬT' : 'Chuông TẮT'}</span>
+          </button>
+
+          {/* CTA tư vấn triển khai */}
+          <button
+            onClick={() => setShowConsultModal(true)}
+            className="btn-consult-cta"
+          >
+            <MessageCircle size={16} />
+            <span>Nhận tư vấn</span>
           </button>
 
           {/* Xem thử nhanh giao diện điện thoại trên máy tính */}
@@ -169,6 +225,61 @@ export default function AdminView({ onOpenCustomerPreview }) {
           </button>
         </div>
       </header>
+
+      {/* SHOWCASE HERO BANNER: GIỚI THIỆU GIẢI PHÁP & HƯỚNG DẪN 3 BƯỚC */}
+      <section className="showcase-hero-banner">
+        <div className="showcase-hero-main">
+          <span className="showcase-eyebrow">
+            <Sparkles size={13} />
+            <span>Demo Trực Tiếp • Không Cần Cài App</span>
+          </span>
+          <h2 className="showcase-hero-title">{SERVICE_INFO.tagline}</h2>
+          <p className="showcase-hero-desc">{SERVICE_INFO.description}</p>
+          <div className="showcase-hero-actions">
+            <button
+              onClick={() => onOpenCustomerPreview(1)}
+              className="btn-hero-try"
+            >
+              <Smartphone size={16} />
+              <span>Thử vai Khách đặt món</span>
+            </button>
+            <button
+              onClick={() => setShowConsultModal(true)}
+              className="btn-hero-contact"
+            >
+              <MessageCircle size={16} />
+              <span>Nhận tư vấn & Báo giá</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="showcase-steps-col">
+          {SERVICE_INFO.steps.map((s) => (
+            <div key={s.step} className="showcase-step-item">
+              <span className="showcase-step-num">{s.step}</span>
+              <div>
+                <div className="showcase-step-title">{s.title}</div>
+                <div className="showcase-step-desc">{s.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* MOBILE CALLOUT: CHỈ HIỆN TRÊN MÀN HÌNH ĐIỆN THOẠI */}
+      <section className="mobile-test-callout">
+        <div className="mobile-callout-text">
+          <strong>Bạn đang xem bằng điện thoại?</strong>
+          <span>Không cần máy thứ 2 — bấm để đóng vai Khách ngồi Bàn 01 gọi món, rồi bấm Đóng để xem đơn nhảy về Quầy.</span>
+        </div>
+        <button
+          onClick={() => onOpenCustomerPreview(1)}
+          className="btn-mobile-try"
+        >
+          <Smartphone size={16} />
+          <span>Thử vai Khách ngay</span>
+        </button>
+      </section>
 
       {/* QUICK STATS CARDS */}
       <section className="stats-grid">
@@ -197,7 +308,9 @@ export default function AdminView({ onOpenCustomerPreview }) {
             <Receipt size={22} />
           </div>
           <div className="stat-info">
-            <span className="stat-label">Doanh thu tạm tính</span>
+            <span className="stat-label">
+              Doanh thu đơn thật
+            </span>
             <span className="stat-val text-emerald-600">{formatMoney(totalRevenue)}</span>
           </div>
         </div>
@@ -260,24 +373,15 @@ export default function AdminView({ onOpenCustomerPreview }) {
         </section>
       )}
 
-      {/* NAVIGATION TABS */}
+      {/* NAVIGATION TABS: GỘP TEST QR + ĐƠN REALTIME CHUNG MỘT KHÔNG GIAN */}
       <div className="admin-nav-tabs">
         <button
-          onClick={() => setActiveTab('orders')}
-          className={`nav-tab-btn ${activeTab === 'orders' ? 'nav-tab-active' : ''}`}
+          onClick={() => setActiveTab('workspace')}
+          className={`nav-tab-btn ${activeTab === 'workspace' ? 'nav-tab-active' : ''}`}
         >
-          <Receipt size={18} />
-          <span>Đơn Hàng Realtime</span>
-          {orders.length > 0 && <span className="tab-counter">{orders.length}</span>}
-        </button>
-
-        <button
-          onClick={() => setActiveTab('qr')}
-          className={`nav-tab-btn ${activeTab === 'qr' ? 'nav-tab-active' : ''}`}
-        >
-          <Smartphone size={18} />
-          <span>5 Mã QR Bàn Đặt Món</span>
-          <span className="tab-badge-new">Dùng thử</span>
+          <QrCode size={18} />
+          <span>Không Gian Test QR & Đơn Realtime</span>
+          {displayedOrders.length > 0 && <span className="tab-counter">{displayedOrders.length}</span>}
         </button>
 
         <button
@@ -291,265 +395,295 @@ export default function AdminView({ onOpenCustomerPreview }) {
 
       {/* MAIN CONTENT AREA */}
       <main className="admin-main-content">
-        {/* TAB 1: DANH SÁCH ĐƠN HÀNG REALTIME */}
-        {activeTab === 'orders' && (
-          <div className="orders-view-wrap">
-            {/* Filter buttons */}
-            <div className="order-filters-bar">
-              <div className="filter-group">
-                <button
-                  onClick={() => setOrderFilter('all')}
-                  className={`filter-btn ${orderFilter === 'all' ? 'filter-active' : ''}`}
-                >
-                  Tất cả ({orders.length})
-                </button>
-                <button
-                  onClick={() => setOrderFilter('pending')}
-                  className={`filter-btn ${orderFilter === 'pending' ? 'filter-active' : ''}`}
-                >
-                  Chờ xác nhận ({orders.filter(o => o.status === 'pending').length})
-                </button>
-                <button
-                  onClick={() => setOrderFilter('preparing')}
-                  className={`filter-btn ${orderFilter === 'preparing' ? 'filter-active' : ''}`}
-                >
-                  Đang pha chế ({orders.filter(o => o.status === 'preparing').length})
-                </button>
-                <button
-                  onClick={() => setOrderFilter('served')}
-                  className={`filter-btn ${orderFilter === 'served' ? 'filter-active' : ''}`}
-                >
-                  Đã phục vụ ({orders.filter(o => o.status === 'served').length})
-                </button>
-              </div>
-
-              <div className="flex items-center gap-2 text-xs text-slate-500">
-                <span className="pulse-dot-sm"></span>
-                <span>Tự động cập nhật thời gian thực</span>
-              </div>
-            </div>
-
-            {filteredOrders.length === 0 ? (
-              <div className="empty-orders-card">
-                <div className="empty-illustration">
-                  <Coffee size={48} className="text-amber-400 opacity-60" />
+        {/* TAB 1: KHÔNG GIAN TEST 5 MÃ QR & ĐƠN HÀNG REALTIME CÙNG LÚC */}
+        {activeTab === 'workspace' && (
+          <div className="workspace-split-grid">
+            {/* CỘT TRÁI: 5 MÃ QR BÀN ĐẶT MÓN */}
+            <section className="workspace-qr-panel">
+              <div className="panel-section-head">
+                <div>
+                  <h3 className="panel-section-title">5 Mã QR Bàn Đặt Món</h3>
+                  <p className="panel-section-sub">Quét bằng điện thoại hoặc bấm “Mở test” để gửi đơn thử</p>
                 </div>
-                <h3 className="empty-title">Chưa có đơn hàng nào trong phiên này</h3>
-                <p className="empty-desc">
-                  Hãy dùng camera điện thoại quét 1 trong 5 mã QR ở tab <strong>"5 Mã QR Bàn Đặt Món"</strong> hoặc bấm nút mở tab thử nghiệm để trải nghiệm tốc độ bắn đơn Realtime cực nhạy!
-                </p>
-                <button
-                  onClick={() => setActiveTab('qr')}
-                  className="btn-primary mt-4"
-                >
-                  <Smartphone size={16} />
-                  <span>Xem 5 mã QR bàn ngay</span>
-                </button>
               </div>
-            ) : (
-              <div className="orders-grid">
-                {filteredOrders.map((order) => {
-                  const statusMap = {
-                    pending: { label: 'Mới đặt', class: 'status-pending' },
-                    preparing: { label: 'Đang pha chế', class: 'status-preparing' },
-                    served: { label: 'Đã phục vụ', class: 'status-served' },
-                    completed: { label: 'Hoàn tất', class: 'status-completed' },
-                  };
-                  const currentStatus = statusMap[order.status] || statusMap.pending;
+
+              <div className="qr-tables-compact-grid">
+                {TABLES.map((table) => {
+                  const tableUrl = getTableUrl(table.id);
+                  const tableOrdersCount = displayedOrders.filter(
+                    o => (o.table_number || o.tableNumber) === table.id && o.status !== 'completed'
+                  ).length;
 
                   return (
-                    <div key={order.id} className={`order-card card-status-${order.status || 'pending'}`}>
-                      {/* Card Header */}
-                      <div className="order-card-header">
-                        <div className="order-card-table-badge">
-                          BÀN {order.table_number || order.tableNumber}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => setPrintOrder(order)}
-                            className="btn-print-order"
-                            title="In phiếu quầy bar / tạm tính K80"
-                          >
-                            <Printer size={13} />
-                            <span>In phiếu</span>
-                          </button>
-                          <span className={`status-badge ${currentStatus.class}`}>
-                            {currentStatus.label}
+                    <div key={table.id} className="table-qr-card table-qr-card-compact">
+                      <div className="table-card-header">
+                        <div className="table-num-pill">{table.name}</div>
+                        <span className="table-area-text">{table.area}</span>
+                      </div>
+
+                      <div className="qr-canvas-wrapper qr-canvas-compact" onClick={() => setSelectedTableQR(table)}>
+                        <QRCodeSVG
+                          value={tableUrl}
+                          size={132}
+                          level="M"
+                          includeMargin={true}
+                          imageSettings={{
+                            src: "https://cdn-icons-png.flaticon.com/512/924/924514.png",
+                            x: undefined,
+                            y: undefined,
+                            height: 24,
+                            width: 24,
+                            excavate: true,
+                          }}
+                        />
+                        <span className="qr-scan-hint">Bấm phóng to</span>
+                      </div>
+
+                      <div className="table-card-status">
+                        {tableOrdersCount > 0 ? (
+                          <span className="table-active-dot">
+                            <span className="pulse-dot"></span> {tableOrdersCount} đơn đang phục vụ
                           </span>
-                        </div>
+                        ) : (
+                          <span className="table-free-dot">Bàn trống / Sẵn sàng</span>
+                        )}
                       </div>
 
-                      {/* Customer & Time */}
-                      <div className="order-card-meta">
-                        <div className="meta-customer">
-                          Khách: <strong>{order.customer_name || order.customerName || 'Khách đặt'}</strong>
-                        </div>
-                        <div className="meta-time">
-                          <Clock size={12} />
-                          {new Date(order.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                      </div>
+                      <div className="table-card-buttons">
+                        <button
+                          onClick={() => onOpenCustomerPreview(table.id)}
+                          className="btn-table-preview"
+                          title="Mở giả lập màn hình khách bàn này"
+                        >
+                          <Smartphone size={14} />
+                          <span>Mở test bàn này</span>
+                        </button>
 
-                      {/* Items List */}
-                      <div className="order-items-table">
-                        {(order.items || []).map((item, idx) => (
-                          <div key={idx} className="order-item-row">
-                            <div className="item-name-qty">
-                              <span className="item-qty-badge">{item.quantity}x</span>
-                              <span className="item-title">{item.name}</span>
-                            </div>
-                            <span className="item-price">{formatMoney((item.price || 0) * (item.quantity || 1))}</span>
-                            {item.note && (
-                              <div className="item-note">Ghi chú: {item.note}</div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Ghi chú chung */}
-                      {order.note && (
-                        <div className="order-general-note">
-                          <strong>Lưu ý:</strong> {order.note}
-                        </div>
-                      )}
-
-                      {/* Total */}
-                      <div className="order-card-total">
-                        <span>Tổng tiền:</span>
-                        <strong className="text-amber-600 font-bold text-lg">
-                          {formatMoney(order.total_amount || order.totalAmount || 0)}
-                        </strong>
-                      </div>
-
-                      {/* Status Action Buttons */}
-                      <div className="order-card-actions">
-                        {order.status === 'pending' && (
-                          <button
-                            onClick={() => handleUpdateStatus(order.id, 'preparing')}
-                            className="btn-status-action btn-to-preparing"
-                          >
-                            <span>Tiếp nhận & Pha chế</span>
-                            <ChevronRight size={14} />
-                          </button>
-                        )}
-
-                        {order.status === 'preparing' && (
-                          <button
-                            onClick={() => handleUpdateStatus(order.id, 'served')}
-                            className="btn-status-action btn-to-served"
-                          >
-                            <span>Đã pha xong, Giao món</span>
-                            <ChevronRight size={14} />
-                          </button>
-                        )}
-
-                        {order.status === 'served' && (
-                          <button
-                            onClick={() => handleUpdateStatus(order.id, 'completed')}
-                            className="btn-status-action btn-to-completed"
-                          >
-                            <CheckCircle2 size={14} />
-                            <span>Khách đã thanh toán xong</span>
-                          </button>
-                        )}
-
-                        {order.status === 'completed' && (
-                          <div className="text-center text-xs text-emerald-600 font-semibold py-1">
-                            ✓ Đã hoàn tất thanh toán
-                          </div>
-                        )}
+                        <a
+                          href={tableUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn-table-newtab"
+                          title="Mở giao diện khách ở tab mới"
+                        >
+                          <ExternalLink size={14} />
+                        </a>
                       </div>
                     </div>
                   );
                 })}
               </div>
-            )}
-          </div>
-        )}
+            </section>
 
-        {/* TAB 2: 5 MÃ QR CODE CHO 5 BÀN */}
-        {activeTab === 'qr' && (
-          <div className="qr-tab-wrap">
-            <div className="qr-intro-banner">
-              <div className="qr-intro-text">
-                <h3 className="font-bold text-lg text-slate-800">
-                  Thử nghiệm thực tế: Dùng camera điện thoại quét 1 mã QR bất kỳ
-                </h3>
-                <p className="text-sm text-slate-600 mt-1">
-                  Trang web sẽ tự nhận diện bạn đang ngồi bàn nào, yêu cầu nhập tên và hiển thị menu 10 món nước để bạn thoải mái chọn, tăng giảm số lượng, hoặc bấm gọi nhân viên / tính tiền!
-                </p>
+            {/* CỘT PHẢI: DANH SÁCH ĐƠN HÀNG REALTIME */}
+            <section className="workspace-orders-panel">
+              <div className="panel-section-head">
+                <div>
+                  <h3 className="panel-section-title">
+                    Đơn Hàng Realtime Tại Quầy
+                    {showingSampleOnly && <span className="sample-header-pill">Đang hiện 1 đơn mẫu</span>}
+                  </h3>
+                  <p className="panel-section-sub">Đơn khách đặt từ mã QR hoặc giả lập sẽ tự động bật tại đây</p>
+                </div>
+                <div className="realtime-live-indicator">
+                  <span className="pulse-dot-sm"></span>
+                  <span>Tự động cập nhật</span>
+                </div>
               </div>
 
-            </div>
+              {/* Filter buttons */}
+              <div className="order-filters-bar">
+                <div className="filter-group">
+                  <button
+                    onClick={() => setOrderFilter('all')}
+                    className={`filter-btn ${orderFilter === 'all' ? 'filter-active' : ''}`}
+                  >
+                    Tất cả ({displayedOrders.length})
+                  </button>
+                  <button
+                    onClick={() => setOrderFilter('pending')}
+                    className={`filter-btn ${orderFilter === 'pending' ? 'filter-active' : ''}`}
+                  >
+                    Chờ xác nhận ({displayedOrders.filter(o => o.status === 'pending').length})
+                  </button>
+                  <button
+                    onClick={() => setOrderFilter('preparing')}
+                    className={`filter-btn ${orderFilter === 'preparing' ? 'filter-active' : ''}`}
+                  >
+                    Đang pha chế ({displayedOrders.filter(o => o.status === 'preparing').length})
+                  </button>
+                  <button
+                    onClick={() => setOrderFilter('served')}
+                    className={`filter-btn ${orderFilter === 'served' ? 'filter-active' : ''}`}
+                  >
+                    Đã phục vụ ({displayedOrders.filter(o => o.status === 'served').length})
+                  </button>
+                </div>
 
-            <div className="qr-tables-grid">
-              {TABLES.map((table) => {
-                const tableUrl = getTableUrl(table.id);
-                const tableOrdersCount = orders.filter(o => (o.table_number || o.tableNumber) === table.id && o.status !== 'completed').length;
+                {orders.length === 0 && sampleDismissed && (
+                  <button onClick={handleRestoreSample} className="btn-restore-sample">
+                    Hiện lại đơn mẫu
+                  </button>
+                )}
+              </div>
 
-                return (
-                  <div key={table.id} className="table-qr-card">
-                    <div className="table-card-header">
-                      <div className="table-num-pill">{table.name}</div>
-                      <span className="table-area-text">{table.area}</span>
-                    </div>
+              {showingSampleOnly && (
+                <div className="sample-info-strip">
+                  <span>
+                    Đây là <strong>đơn mẫu minh họa</strong> (không lưu database) để bạn thử thao tác duyệt đơn & In phiếu K80. Khi có đơn thật mới, mẫu sẽ tự ẩn.
+                  </span>
+                  <button onClick={handleDismissSample} className="btn-dismiss-sample" title="Ẩn đơn mẫu">
+                    <X size={13} />
+                    <span>Ẩn mẫu</span>
+                  </button>
+                </div>
+              )}
 
-                    <div className="qr-canvas-wrapper" onClick={() => setSelectedTableQR(table)}>
-                      <QRCodeSVG
-                        value={tableUrl}
-                        size={170}
-                        level="M"
-                        includeMargin={true}
-                        imageSettings={{
-                          src: "https://cdn-icons-png.flaticon.com/512/924/924514.png",
-                          x: undefined,
-                          y: undefined,
-                          height: 28,
-                          width: 28,
-                          excavate: true,
-                        }}
-                      />
-                      <span className="qr-scan-hint">Bấm để phóng to</span>
-                    </div>
-
-                    <div className="table-card-status">
-                      {tableOrdersCount > 0 ? (
-                        <span className="table-active-dot">
-                          <span className="pulse-dot"></span> Có {tableOrdersCount} đơn đang phục vụ
-                        </span>
-                      ) : (
-                        <span className="table-free-dot">Bàn trống / Sẵn sàng</span>
-                      )}
-                    </div>
-
-                    <div className="table-card-buttons">
-                      <button
-                        onClick={() => onOpenCustomerPreview(table.id)}
-                        className="btn-table-preview"
-                        title="Mở giả lập màn hình khách bàn này ngay trên máy tính"
-                      >
-                        <Smartphone size={14} />
-                        <span>Mở test bàn này</span>
-                      </button>
-
-                      <a
-                        href={tableUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn-table-newtab"
-                        title="Mở tab mới trong trình duyệt"
-                      >
-                        <ExternalLink size={14} />
-                      </a>
-                    </div>
+              {filteredOrders.length === 0 ? (
+                <div className="empty-orders-card">
+                  <div className="empty-illustration">
+                    <Coffee size={44} className="text-amber-400 opacity-60" />
                   </div>
-                );
-              })}
-            </div>
+                  <h3 className="empty-title">Chưa có đơn hàng nào ở trạng thái này</h3>
+                  <p className="empty-desc">
+                    Hãy bấm <strong>“Mở test bàn này”</strong> ở cột mã QR bên cạnh (hoặc quét QR bằng điện thoại) để tạo đơn hàng mới!
+                  </p>
+                  <button
+                    onClick={() => onOpenCustomerPreview(1)}
+                    className="btn-primary mt-4"
+                  >
+                    <Smartphone size={16} />
+                    <span>Mở giả lập Bàn 01 ngay</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="orders-grid">
+                  {filteredOrders.map((order) => {
+                    const statusMap = {
+                      pending: { label: 'Mới đặt', class: 'status-pending' },
+                      preparing: { label: 'Đang pha chế', class: 'status-preparing' },
+                      served: { label: 'Đã phục vụ', class: 'status-served' },
+                      completed: { label: 'Hoàn tất', class: 'status-completed' },
+                    };
+                    const currentStatus = statusMap[order.status] || statusMap.pending;
+
+                    return (
+                      <div key={order.id} className={`order-card card-status-${order.status || 'pending'} ${order.isSample ? 'order-card-sample' : ''}`}>
+                        {/* Card Header */}
+                        <div className="order-card-header">
+                          <div className="order-card-badges-left">
+                            <div className="order-card-table-badge">
+                              BÀN {order.table_number || order.tableNumber}
+                            </div>
+                            {order.isSample && (
+                              <span className="sample-order-badge">ĐƠN MẪU</span>
+                            )}
+                          </div>
+                          <div className="order-card-header-right">
+                            <button
+                              onClick={() => setPrintOrder(order)}
+                              className="btn-print-order"
+                              title="In phiếu quầy bar / tạm tính K80"
+                            >
+                              <Printer size={13} />
+                              <span>In phiếu</span>
+                            </button>
+                            <span className={`status-badge ${currentStatus.class}`}>
+                              {currentStatus.label}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Customer & Time */}
+                        <div className="order-card-meta">
+                          <div className="meta-customer">
+                            Khách: <strong>{order.customer_name || order.customerName || 'Khách đặt'}</strong>
+                          </div>
+                          <div className="meta-time">
+                            <Clock size={12} />
+                            {new Date(order.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+
+                        {/* Items List */}
+                        <div className="order-items-table">
+                          {(order.items || []).map((item, idx) => (
+                            <div key={idx} className="order-item-row">
+                              <div className="item-name-qty">
+                                <span className="item-qty-badge">{item.quantity}x</span>
+                                <span className="item-title">{item.name}</span>
+                              </div>
+                              <span className="item-price">{formatMoney((item.price || 0) * (item.quantity || 1))}</span>
+                              {item.note && (
+                                <div className="item-note">Ghi chú: {item.note}</div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Ghi chú chung */}
+                        {order.note && (
+                          <div className="order-general-note">
+                            <strong>Lưu ý:</strong> {order.note}
+                          </div>
+                        )}
+
+                        {/* Total */}
+                        <div className="order-card-total">
+                          <span>Tổng tiền:</span>
+                          <strong className="order-total-val">
+                            {formatMoney(order.total_amount || order.totalAmount || 0)}
+                          </strong>
+                        </div>
+
+                        {/* Status Action Buttons */}
+                        <div className="order-card-actions">
+                          {order.status === 'pending' && (
+                            <button
+                              onClick={() => handleUpdateStatus(order.id, 'preparing')}
+                              className="btn-status-action btn-to-preparing"
+                            >
+                              <span>Tiếp nhận & Pha chế</span>
+                              <ChevronRight size={14} />
+                            </button>
+                          )}
+
+                          {order.status === 'preparing' && (
+                            <button
+                              onClick={() => handleUpdateStatus(order.id, 'served')}
+                              className="btn-status-action btn-to-served"
+                            >
+                              <span>Đã pha xong, Giao món</span>
+                              <ChevronRight size={14} />
+                            </button>
+                          )}
+
+                          {order.status === 'served' && (
+                            <button
+                              onClick={() => handleUpdateStatus(order.id, 'completed')}
+                              className="btn-status-action btn-to-completed"
+                            >
+                              <CheckCircle2 size={14} />
+                              <span>Khách đã thanh toán xong</span>
+                            </button>
+                          )}
+
+                          {order.status === 'completed' && (
+                            <div className="order-completed-note">
+                              ✓ Đã hoàn tất thanh toán
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
           </div>
         )}
 
-        {/* TAB 3: MENU 10 MÓN NƯỚC MẪU */}
+        {/* TAB 2: MENU 10 MÓN NƯỚC MẪU */}
         {activeTab === 'menu' && (
           <div className="menu-tab-wrap">
             <div className="menu-tab-header">
@@ -672,6 +806,107 @@ export default function AdminView({ onOpenCustomerPreview }) {
                 <span>In ngay (Print)</span>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL TƯ VẤN & LIÊN HỆ TRIỂN KHAI CHO QUÁN */}
+      {showConsultModal && (
+        <div className="modal-backdrop" onClick={() => setShowConsultModal(false)}>
+          <div className="consult-modal-card" onClick={e => e.stopPropagation()}>
+            <div className="consult-modal-header">
+              <div>
+                <span className="consult-badge">Triển khai trọn gói cho quán</span>
+                <h3 className="consult-modal-title">{SERVICE_INFO.contact.ownerTitle}</h3>
+              </div>
+              <button
+                onClick={() => setShowConsultModal(false)}
+                className="consult-close-btn"
+                title="Đóng"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="consult-highlights-box">
+              <div className="consult-highlights-heading">Điểm nổi bật của giải pháp:</div>
+              <ul className="consult-highlights-list">
+                {SERVICE_INFO.highlights.map((item, idx) => (
+                  <li key={idx}>
+                    <CheckCircle2 size={15} className="consult-check-icon" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="consult-channels-list">
+              {SERVICE_INFO.contact.hotlineTel ? (
+                <a href={`tel:${SERVICE_INFO.contact.hotlineTel}`} className="consult-channel-card consult-channel-link">
+                  <div className="consult-channel-icon consult-icon-amber">
+                    <PhoneCall size={18} />
+                  </div>
+                  <div>
+                    <div className="consult-channel-label">Hotline / Điện thoại trực tiếp</div>
+                    <div className="consult-channel-val">{SERVICE_INFO.contact.hotlineDisplay}</div>
+                  </div>
+                </a>
+              ) : (
+                <div className="consult-channel-card">
+                  <div className="consult-channel-icon consult-icon-amber">
+                    <PhoneCall size={18} />
+                  </div>
+                  <div>
+                    <div className="consult-channel-label">Hotline / Điện thoại trực tiếp</div>
+                    <div className="consult-channel-val">{SERVICE_INFO.contact.hotlineDisplay}</div>
+                  </div>
+                </div>
+              )}
+
+              {SERVICE_INFO.contact.zaloUrl ? (
+                <a
+                  href={SERVICE_INFO.contact.zaloUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="consult-channel-card consult-channel-link"
+                >
+                  <div className="consult-channel-icon consult-icon-blue">
+                    <MessageCircle size={18} />
+                  </div>
+                  <div>
+                    <div className="consult-channel-label">Zalo tư vấn & Gửi bảng giá</div>
+                    <div className="consult-channel-val">{SERVICE_INFO.contact.zaloLabel}</div>
+                  </div>
+                </a>
+              ) : (
+                <div className="consult-channel-card">
+                  <div className="consult-channel-icon consult-icon-blue">
+                    <MessageCircle size={18} />
+                  </div>
+                  <div>
+                    <div className="consult-channel-label">Zalo tư vấn & Gửi bảng giá</div>
+                    <div className="consult-channel-val">{SERVICE_INFO.contact.zaloLabel}</div>
+                  </div>
+                </div>
+              )}
+
+              <div className="consult-channel-card">
+                <div className="consult-channel-icon consult-icon-emerald">
+                  <Mail size={18} />
+                </div>
+                <div>
+                  <div className="consult-channel-label">Email hỗ trợ</div>
+                  <div className="consult-channel-val">{SERVICE_INFO.contact.emailDisplay}</div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowConsultModal(false)}
+              className="consult-done-btn"
+            >
+              Đóng cửa sổ
+            </button>
           </div>
         </div>
       )}

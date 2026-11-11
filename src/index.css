@@ -1993,3 +1993,1139 @@ input, textarea {
   gap: 10px;
   margin-top: 18px;
 }
+
+/* ========================================================
+   SHOWCASE BANNER, SPLIT WORKSPACE, SAMPLE BADGE & MOBILE UX
+   ======================================================== */
+.app-root-shell {
+  min-height: 100vh;
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+.phone-header-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.phone-header-icon {
+  color: #d97706;
+}
+
+.phone-header-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.phone-newtab-link {
+  color: #64748b;
+}
+
+.phone-newtab-link:hover {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+.phone-close-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+}
+
+.phone-close-pill:hover {
+  background: #fecaca;
+}
+
+.btn-label-sm {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-consult-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 9px 15px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-consult-cta:hover {
+  border-color: #f59e0b;
+  color: #b45309;
+  background: #fffbeb;
+}
+
+/* Hero Showcase Banner */
+.showcase-hero-banner {
+  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 55%, #f8fafc 100%);
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 24px;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.showcase-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  margin-bottom: 10px;
+}
+
+.showcase-hero-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.showcase-hero-desc {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.showcase-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn-hero-try {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 6px 14px rgba(245, 158, 11, 0.25);
+}
+
+.btn-hero-try:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(245, 158, 11, 0.35);
+}
+
+.btn-hero-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+}
+
+.btn-hero-contact:hover {
+  background: #1e293b;
+}
+
+.showcase-steps-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.showcase-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+
+.showcase-step-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.showcase-step-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.showcase-step-desc {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* Mobile Direct Test Callout (ẩn trên PC, tự hiện trên điện thoại) */
+.mobile-test-callout {
+  display: none;
+}
+
+.mobile-callout-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.mobile-callout-text span {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.btn-mobile-try {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  width: 100%;
+}
+
+/* Split Workspace: 5 QR Bàn + Đơn Hàng Realtime trên 1 màn hình */
+.workspace-split-grid {
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.workspace-qr-panel,
+.workspace-orders-panel {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.panel-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+}
+
+.panel-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.panel-section-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.realtime-live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+.qr-tables-compact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.table-qr-card-compact {
+  padding: 14px 10px;
+}
+
+.table-qr-card-compact .table-card-header {
+  margin-bottom: 10px;
+}
+
+.table-qr-card-compact .table-area-text {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 3px;
+}
+
+.qr-canvas-compact {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 8px;
+}
+
+.qr-canvas-compact svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Sample Starter Order Styling */
+.sample-header-pill {
+  font-size: 11px;
+  font-weight: 700;
+  background: #fef3c7;
+  color: #b45309;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.sample-info-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fffbeb;
+  border: 1px dashed #fbbf24;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #78350f;
+  margin-bottom: 14px;
+}
+
+.btn-dismiss-sample,
+.btn-restore-sample {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.btn-dismiss-sample:hover,
+.btn-restore-sample:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.order-card-sample {
+  background: linear-gradient(180deg, #fffdf5 0%, #ffffff 45%);
+}
+
+.order-card-badges-left,
+.order-card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sample-order-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+}
+
+.order-total-val {
+  color: #d97706;
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.order-completed-note {
+  text-align: center;
+  font-size: 12px;
+  color: #059669;
+  font-weight: 700;
+  padding: 6px 0;
+}
+
+/* Consultation Modal */
+.consult-modal-card {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+}
+
+.consult-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.consult-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  background: #fef3c7;
+  color: #b45309;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  margin-bottom: 6px;
+}
+
+.consult-modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.consult-close-btn {
+  padding: 6px;
+  border-radius: var(--radius-full);
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.consult-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.consult-highlights-box {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.consult-highlights-heading {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.consult-highlights-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.consult-highlights-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.consult-check-icon {
+  flex-shrink: 0;
+  color: #10b981;
+  margin-top: 2px;
+}
+
+.consult-channels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.consult-channel-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  text-decoration: none;
+  color: inherit;
+}
+
+.consult-channel-link:hover {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.consult-channel-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.consult-icon-amber {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.consult-icon-blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.consult-icon-emerald {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.consult-channel-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.consult-channel-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  word-break: break-word;
+}
+
+.consult-done-btn {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.consult-done-btn:hover {
+  background: #1e293b;
+}
+
+/* Helper width rules for modal action buttons */
+.modal-qr-zoom .btn-secondary {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.receipt-actions-bar > button {
+  flex: 1;
+}
+
+/* Responsive adjustments (Laptop > 1080px giữ nguyên hoàn toàn) */
+@media (max-width: 1080px) {
+  .showcase-hero-banner {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .workspace-split-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Trên màn hình vừa/nhỏ: đẩy danh sách Đơn Realtime lên trên để tiện xem ngay sau khi đặt thử */
+  .workspace-orders-panel {
+    order: 1;
+  }
+
+  .workspace-qr-panel {
+    order: 2;
+  }
+
+  .qr-tables-compact-grid {
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 12px 12px 44px;
+  }
+
+  /* 1. Header gọn gàng 2 tầng rõ ràng */
+  .admin-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+  }
+
+  .admin-header-brand {
+    gap: 10px;
+  }
+
+  .brand-logo-badge {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  .brand-title-wrap {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .brand-title {
+    font-size: 18px;
+  }
+
+  .brand-badge-live {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+
+  .brand-sub {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .admin-header-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .admin-header-actions .btn-icon,
+  .admin-header-actions .btn-consult-cta {
+    justify-content: center;
+    padding: 9px 10px;
+    font-size: 12.5px;
+    width: 100%;
+  }
+
+  .btn-primary-preview {
+    display: none;
+  }
+
+  /* 2. Hero Showcase gọn mắt, không lặp lại CTA thừa */
+  .showcase-hero-banner {
+    padding: 14px;
+    border-radius: 16px;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .showcase-eyebrow {
+    font-size: 11px;
+    padding: 3px 10px;
+    margin-bottom: 8px;
+  }
+
+  .showcase-hero-title {
+    font-size: 16px;
+    line-height: 1.35;
+    margin-bottom: 6px;
+  }
+
+  .showcase-hero-desc {
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  .showcase-hero-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .btn-hero-try,
+  .btn-hero-contact {
+    justify-content: center;
+    text-align: center;
+    padding: 9px 10px;
+    font-size: 12px;
+    line-height: 1.25;
+    min-height: 42px;
+    border-radius: 10px;
+    width: 100%;
+  }
+
+  .btn-hero-try svg,
+  .btn-hero-contact svg {
+    flex-shrink: 0;
+  }
+
+  .urgent-banner-section {
+    padding: 12px;
+    margin-bottom: 14px;
+    border-radius: 14px;
+  }
+
+  .urgent-cards-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* 3 bước thu gọn thành 1 dải ngang 3 cột gọn nhẹ */
+  .showcase-steps-col {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .showcase-step-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 8px 6px;
+    gap: 5px;
+    border-radius: 10px;
+  }
+
+  .showcase-step-num {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+    border-radius: 6px;
+  }
+
+  .showcase-step-title {
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  .showcase-step-desc {
+    display: none;
+  }
+
+  /* Ẩn banner lặp trên mobile vì CTA "Thử vai Khách đặt món" đã nằm ngay trên Hero */
+  .mobile-test-callout {
+    display: none;
+  }
+
+  /* 3. Lưới KPI 2x2 gọn gàng thay vì 4 thanh dài dọc */
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .stat-card {
+    padding: 12px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+
+  .stat-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .stat-icon-wrap svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .stat-info {
+    min-width: 0;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  .stat-val {
+    font-size: 15px;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  /* 4. Segmented Tab Bar kiểu app mobile */
+  .admin-nav-tabs {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 4px;
+    background: #e2e8f0;
+    padding: 4px;
+    border-radius: 12px;
+    border-bottom: none;
+    margin-bottom: 14px;
+  }
+
+  .nav-tab-btn {
+    justify-content: center;
+    text-align: center;
+    padding: 9px 8px;
+    font-size: 12px;
+    line-height: 1.25;
+    gap: 5px;
+    border-radius: 9px;
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .nav-tab-btn svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+
+  .nav-tab-active {
+    background: #ffffff;
+    color: #b45309;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
+  }
+
+  /* 5. Panel Đơn Realtime & Card đơn hàng */
+  .workspace-split-grid {
+    gap: 14px;
+  }
+
+  .workspace-orders-panel,
+  .workspace-qr-panel {
+    padding: 14px 12px;
+    border-radius: 16px;
+  }
+
+  .panel-section-head {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    gap: 8px;
+  }
+
+  .panel-section-title {
+    font-size: 15px;
+  }
+
+  .panel-section-sub {
+    font-size: 11.5px;
+  }
+
+  .realtime-live-indicator {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .order-filters-bar {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .filter-group {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .filter-group::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-btn {
+    flex-shrink: 0;
+    font-size: 11.5px;
+    padding: 6px 12px;
+  }
+
+  .sample-info-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 11.5px;
+    margin-bottom: 12px;
+  }
+
+  .orders-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .order-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .order-card-header {
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .order-card-table-badge {
+    font-size: 13px;
+    padding: 3px 9px;
+  }
+
+  .order-card-actions .btn-status-action {
+    padding: 11px;
+    font-size: 13px;
+  }
+
+  .empty-orders-card {
+    padding: 28px 16px;
+    margin: 8px 0;
+  }
+
+  /* 6. 5 Card QR Bàn dạng thẻ ngang cực gọn (QR trái + nút/trạng thái phải) */
+  .qr-tables-compact-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .table-qr-card-compact {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    column-gap: 12px;
+    row-gap: 4px;
+    align-items: center;
+    text-align: left;
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .table-qr-card-compact:hover {
+    transform: none;
+  }
+
+  .table-qr-card-compact .qr-canvas-compact {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    width: 92px;
+    padding: 6px;
+    margin: 0;
+  }
+
+  .table-qr-card-compact .qr-canvas-compact svg {
+    width: 78px;
+    height: 78px;
+  }
+
+  .table-qr-card-compact .qr-scan-hint {
+    font-size: 9px;
+    margin-top: 3px;
+  }
+
+  .table-qr-card-compact .table-card-header {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px;
+    text-align: left;
+    margin-bottom: 0;
+  }
+
+  .table-qr-card-compact .table-num-pill {
+    font-size: 15px;
+  }
+
+  .table-qr-card-compact .table-area-text {
+    display: inline;
+    margin-top: 0;
+    font-size: 11.5px;
+  }
+
+  .table-qr-card-compact .table-card-status {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 2px 0 6px;
+    font-size: 11.5px;
+  }
+
+  .table-qr-card-compact .table-card-buttons {
+    grid-column: 2;
+    grid-row: 3;
+    width: 100%;
+  }
+
+  .table-qr-card-compact .btn-table-preview {
+    padding: 8px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  /* 7. Modals & Customer View safe-area mobile viewport */
+  .modal-backdrop {
+    padding: 12px;
+  }
+
+  .consult-modal-card,
+  .modal-qr-zoom,
+  .modal-receipt-box {
+    max-height: 92dvh;
+    overflow-y: auto;
+    padding: 18px 16px;
+  }
+
+  .customer-app-wrapper {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+
+  .customer-header {
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .customer-header-title {
+    min-width: 0;
+  }
+
+  .customer-tab-switch {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .customer-bottom-bar {
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 640px) {
+  /* Menu 10 món dạng list ngang giống app đặt đồ ăn */
+  .admin-menu-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .admin-menu-card {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    border-radius: 14px;
+  }
+
+  .admin-menu-img-wrap {
+    width: 106px;
+    min-width: 106px;
+    height: auto;
+    min-height: 106px;
+  }
+
+  .admin-menu-img-wrap img {
+    display: block;
+  }
+
+  .admin-menu-tag {
+    top: 6px;
+    left: 6px;
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .admin-menu-body {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .admin-menu-name {
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+
+  .admin-menu-desc {
+    margin-bottom: 6px;
+    font-size: 11.5px;
+  }
+
+  .admin-menu-price {
+    font-size: 14px;
+  }
+
+  /* Khung giả lập full màn hình trên điện thoại */
+  .phone-simulator-backdrop {
+    padding: 0;
+  }
+
+  .phone-simulator-frame {
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border: none;
+    border-radius: 0;
+  }
+
+  .phone-notch-bar {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-tab-btn svg {
+    display: none;
+  }
+
+  .stat-card {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .stat-val {
+    font-size: 14px;
+  }
+}

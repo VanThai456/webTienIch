@@ -111,3 +111,58 @@ export const formatMoney = (amount) => {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 };
 
+// Thông tin giới thiệu dịch vụ & kênh liên hệ tư vấn (Chỉnh sửa lại thông tin thật của bạn tại đây)
+export const SERVICE_INFO = {
+  brandName: 'SmartQR Order',
+  tagline: 'Giải pháp Menu QR & Đặt món Realtime cho Quán Cafe, Trà Sữa, Quán Ăn',
+  description:
+    'Khách ngồi tại bàn quét mã QR bằng camera điện thoại để tự xem menu, chọn món và gọi phục vụ. Đơn lập tức nhảy về màn hình quầy thu ngân/pha chế kèm chuông báo — không cần cài app.',
+  steps: [
+    { step: '01', title: 'Chọn bàn / Quét QR', desc: 'Mở giả lập hoặc dùng điện thoại quét 1 trong 5 mã QR bàn.' },
+    { step: '02', title: 'Khách tự gọi món', desc: 'Chọn nước, ghi chú ít đá/ít đường và bấm gửi đơn.' },
+    { step: '03', title: 'Nhận đơn & In phiếu', desc: 'Quầy nghe chuông ting-ting, cập nhật trạng thái & in bill K80.' },
+  ],
+  highlights: [
+    'Mỗi bàn có mã QR riêng — tự động nhận diện số bàn khi khách quét',
+    'Đồng bộ đơn Realtime & giữ đơn khi F5 trên trình duyệt',
+    'Hỗ trợ in phiếu bếp/tạm tính K80 & thanh toán VietQR',
+    'Nhân sự quầy xử lý nhanh, khách không phải chờ menu giấy',
+  ],
+  contact: {
+    ownerTitle: 'Tư vấn triển khai hệ thống cho quán của bạn',
+    hotlineDisplay: '09xx.xxx.xxx (Cập nhật SĐT của bạn trong menu.js)',
+    hotlineTel: '',
+    zaloLabel: 'Nhắn Zalo tư vấn (Cập nhật link Zalo trong menu.js)',
+    zaloUrl: '',
+    emailDisplay: 'contact@smartqr-demo.vn',
+  },
+};
+
+// Đơn mẫu chỉ hiển thị trên giao diện demo khi chưa có đơn thật nào (KHÔNG lưu vào Supabase)
+export const createSampleOrder = () => ({
+  id: 'SAMPLE-DEMO-01',
+  isSample: true,
+  table_number: 2,
+  customer_name: 'Minh Anh (Khách mẫu)',
+  items: [
+    {
+      id: 'drink-05',
+      name: 'Trà Sữa Trân Châu Hoàng Gia',
+      price: 49000,
+      quantity: 1,
+      note: 'Ít đường, trân châu trắng',
+    },
+    {
+      id: 'drink-03',
+      name: 'Trà Đào Cam Sả Đá Lạnh',
+      price: 45000,
+      quantity: 1,
+    },
+  ],
+  total_amount: 94000,
+  note: 'Mang ra cùng lúc giúp mình nhé',
+  status: 'pending',
+  created_at: new Date().toISOString(),
+});
+
+

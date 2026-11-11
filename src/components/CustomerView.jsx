@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { 
   Coffee, ShoppingBag, Plus, Minus, Trash2, Bell, Receipt, 
-  Search, CheckCircle, ChevronLeft, ArrowRight, Sparkles, AlertCircle,
+  Search, CheckCircle, ArrowRight, Sparkles, AlertCircle,
   Clock, X, Send, User, ChevronUp
 } from 'lucide-react';
 import { MENU_CATEGORIES, MENU_ITEMS, TABLES, formatMoney } from '../data/menu';
 import { realtimeService, SESSION_ID } from '../services/realtime';
 import { soundManager } from '../utils/sound';
 
-export default function CustomerView({ tableId = 1, onBackToAdmin }) {
+export default function CustomerView({ tableId = 1 }) {
   // Tìm thông tin bàn
   const table = TABLES.find(t => t.id === Number(tableId)) || TABLES[0];
 
@@ -202,12 +202,6 @@ export default function CustomerView({ tableId = 1, onBackToAdmin }) {
       <div className="customer-container">
         {/* TOP BAR / HEADER */}
         <header className="customer-header">
-          {onBackToAdmin && (
-            <button onClick={onBackToAdmin} className="customer-btn-back" title="Quay lại bảng quản lý">
-              <ChevronLeft size={18} />
-            </button>
-          )}
-
           <div className="customer-header-title">
             <div className="customer-table-tag">
               <span className="customer-table-pill">{table.name}</span>
